@@ -1,4 +1,4 @@
-package alternativa.tanks.utils.objectpool
+package tanki2.utils.objectpool
 {
    import flash.utils.Dictionary;
    

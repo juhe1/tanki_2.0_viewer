@@ -47,7 +47,7 @@ package alternativa.engine3d.materials {
 		private var programsCache:Dictionary;
 
 		// inputs: color
-      // NOTE: I have modified this, original shader uses miplinear not mipnone.
+      // NOTE: original is miplinenar not mipnone
 		private static const _applyLightMapProcedure:Procedure = new Procedure([
 			"#v0=vUV1",
 			"#s0=sLightMap",

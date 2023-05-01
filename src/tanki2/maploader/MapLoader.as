@@ -38,6 +38,7 @@ package tanki2.maploader
    
    public class MapLoader extends EventDispatcher
    {
+      private static const STATIC_COLLISION_GROUP:int = 255;
       
       public static const MAIN_FILE:String = "main.a3d";
       
@@ -162,15 +163,15 @@ package tanki2.maploader
                objectName = object.name.toLowerCase();
                if(objectName.indexOf("tri") == 0)
                {
-                  MeshToCollisionPrimitive.triangleMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, CollisionGroup.STATIC, PhysicsMaterial.DEFAULT_MATERIAL);
+                  MeshToCollisionPrimitive.triangleMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, STATIC_COLLISION_GROUP, PhysicsMaterial.DEFAULT_MATERIAL);
                }
                else if(objectName.indexOf("box") == 0)
                {
-                  MeshToCollisionPrimitive.boxMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, CollisionGroup.STATIC, PhysicsMaterial.DEFAULT_MATERIAL);
+                  MeshToCollisionPrimitive.boxMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, STATIC_COLLISION_GROUP, PhysicsMaterial.DEFAULT_MATERIAL);
                }
                else if(objectName.indexOf("plane") == 0)
                {
-                  MeshToCollisionPrimitive.planeMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, CollisionGroup.STATIC, PhysicsMaterial.DEFAULT_MATERIAL);
+                  MeshToCollisionPrimitive.planeMeshToCollisionPrimitive(Mesh(object), this.collisionPrimitives, STATIC_COLLISION_GROUP, PhysicsMaterial.DEFAULT_MATERIAL);
                }
             }
          }

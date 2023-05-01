@@ -25,7 +25,7 @@ package tanki2.display
          this.xAxis = new Vector3();
          this.yAxis = new Vector3();
          this.zAxis = new Vector3();
-         super();
+         super(0, 0);
       }
       
       public function recalculate() : void

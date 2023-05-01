@@ -20,12 +20,9 @@ package tanki2.maploader
       
       private var mapLoader:MapLoader;
       
-      private var context3D:Context3D;
-      
-      public function MapObject(mapLoader:MapLoader, context3D:Context3D)
+      public function MapObject(mapLoader:MapLoader)
       {
          this.mapLoader = mapLoader;
-         this.context3D = context3D;
          
          this.addObjectsToScene();
          this.addLightsToScene();
@@ -81,13 +78,6 @@ package tanki2.maploader
             addChild(object);
          }
       }
-      
-      private function uploadResources(resources:Vector.<Resource>):void
-      {
-			for each (var resource:Resource in resources) {
-				resource.upload(this.context3D);
-			}
-		}
       
    }
 

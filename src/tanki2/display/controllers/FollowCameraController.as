@@ -1,14 +1,13 @@
 package tanki2.display.controllers
 {
-   import alternativa.engine3d.core.EllipsoidCollider;
-   import alternativa.engine3d.core.Object3DContainer;
-   import alternativa.engine3d.primitives.Sphere;
+   import alternativa.engine3d.collisions.EllipsoidCollider;
+   import alternativa.engine3d.core.Object3D;
    import alternativa.math.Matrix3;
    import alternativa.math.Vector3;
    import alternativa.physics.collision.CollisionDetector;
    import alternativa.physics.collision.types.RayHit;
-   import alternativa.tanks.display.GameCamera;
-   import alternativa.tanks.display.ICameraController;
+   import tanki2.display.GameCamera;
+   import tanki2.display.ICameraController;
    import flash.display.Stage;
    import flash.events.KeyboardEvent;
    import flash.geom.Point;
@@ -37,7 +36,7 @@ package tanki2.display.controllers
       
       private static const rayDirection:Vector3 = new Vector3();
       
-      private static const MIN_DISTANCE:Number = 300;
+      private static const MIN_DISTANCE:Number = 30;
       
       private static const COLLISION_OFFSET:Number = 50;
       
@@ -112,15 +111,11 @@ package tanki2.display.controllers
       
       private var point3:Point;
       
-      public var collisionObject:Object3DContainer;
+      public var collisionObject:Object3D;
       
       private var collisionFilter:Dictionary;
       
       private var collider:EllipsoidCollider;
-      
-      private var startMarker:Sphere;
-      
-      private var endMarker:Sphere;
       
       private const rayOrigin3D:Vector3D = new Vector3D();
       
@@ -134,7 +129,7 @@ package tanki2.display.controllers
       
       private const v:Vector3 = new Vector3();
       
-      public function FollowCameraController(stage:Stage, collisionDetector:CollisionDetector, camera:GameCamera, cameraCollisionGroup:int, collisionObject:Object3DContainer, collisionFilter:Dictionary)
+      public function FollowCameraController(stage:Stage, collisionDetector:CollisionDetector, camera:GameCamera, cameraCollisionGroup:int, collisionObject:Object3D, collisionFilter:Dictionary)
       {
          this.position = new Vector3();
          this.rotation = new Vector3();
@@ -253,11 +248,6 @@ package tanki2.display.controllers
             this.active = true;
             this.stage.addEventListener(KeyboardEvent.KEY_DOWN,this.onKey);
             this.stage.addEventListener(KeyboardEvent.KEY_UP,this.onKey);
-            if(this.startMarker != null)
-            {
-               this.collisionObject.addChild(this.startMarker);
-               this.collisionObject.addChild(this.endMarker);
-            }
          }
       }
       
@@ -393,15 +383,6 @@ package tanki2.display.controllers
             rayOrigin.copy(cameraCollisionPosition);
             rayDirection.copy(Vector3.Z_AXIS);
             cameraCollisionPosition = this.getCameraCollisionPosition(rayOrigin,rayDirection,MIN_DISTANCE - distance);
-         }
-         if(this.startMarker != null)
-         {
-            this.startMarker.x = targetPosition.x;
-            this.startMarker.y = targetPosition.y;
-            this.startMarker.z = targetPosition.z;
-            this.endMarker.x = cameraCollisionPosition.x;
-            this.endMarker.y = cameraCollisionPosition.y;
-            this.endMarker.z = cameraCollisionPosition.z;
          }
          result.position.copy(cameraCollisionPosition);
       }

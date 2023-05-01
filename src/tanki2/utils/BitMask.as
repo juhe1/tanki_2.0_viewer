@@ -1,4 +1,4 @@
-package alternativa.tanks.utils
+package tanki2.utils
 {
    public class BitMask
    {

@@ -2,7 +2,7 @@ package tanki2.display.controllers
 {
    import alternativa.engine3d.controllers.SimpleObjectController;
    import alternativa.engine3d.core.Object3D;
-   import alternativa.tanks.display.ICameraController;
+   import tanki2.display.ICameraController;
    import flash.display.InteractiveObject;
    import flash.ui.Keyboard;
    

@@ -1,7 +1,7 @@
 package tanki2.display.controllers
 {
    import alternativa.math.Vector3;
-   import alternativa.tanks.display.GameCamera;
+   import tanki2.display.GameCamera;
    
    public class CameraControllerBase
    {

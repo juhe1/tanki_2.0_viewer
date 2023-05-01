@@ -1,6 +1,6 @@
-package alternativa.tanks.utils
+package tanki2.utils
 {
-   import alternativa.tanks.GameObject;
+   import tanki2.GameObject;
    
    public class GOListItem
    {

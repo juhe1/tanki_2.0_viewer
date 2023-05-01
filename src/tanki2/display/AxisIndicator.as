@@ -21,8 +21,27 @@ package tanki2.display
          this._size = size;
       }
       
-      public function update(param1:Camera3D) : void
+      public function update(camera:Camera3D) : void
       {
+         var kx:Number = NaN;
+         var ky:Number = NaN;
+         graphics.clear();
+         camera.composeTransforms();
+         this.axis[0] = camera.transform.a;
+         this.axis[1] = camera.transform.b;
+         this.axis[2] = camera.transform.e;
+         this.axis[3] = camera.transform.f;
+         this.axis[4] = camera.transform.i;
+         this.axis[5] = camera.transform.j;
+         var bitOffset:int = 16;
+         for (var i:int = 0;  i < 6; i += 2, bitOffset -= 8)
+         {
+            kx = this.axis[i] + 1;
+            ky = this.axis[int(i + 1)] + 1;
+            graphics.lineStyle(0,255 << bitOffset);
+            graphics.moveTo(this._size,this._size);
+            graphics.lineTo(this._size * kx,this._size * ky);
+         }
       }
       
       public function get size() : int

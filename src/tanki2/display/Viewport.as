@@ -3,6 +3,9 @@ package tanki2.display
    import alternativa.engine3d.core.View;
    import flash.display.Graphics;
    import flash.display.Sprite;
+   import flash.display.Stage;
+   import flash.display.Stage3D;
+   import flash.events.Event;
    
    public class Viewport extends Sprite
    {
@@ -26,13 +29,22 @@ package tanki2.display
       
       private var overlay:Sprite;
       
-      public function Viewport(camera:GameCamera, debugPanel:DebugPanel)
+      private var stage3D:Stage3D;
+      
+      public function Viewport(camera:GameCamera, debugPanel:DebugPanel, stage3D:Stage3D, stage:Stage)
       {
          super();
+         this.stage3D = stage3D;
          this.camera = camera;
-         this.view = new View(0,0);
+         
+         this.camera.x = 0
+         this.camera.y = 0
+         this.camera.z = 2000
+         
+         this.view = new View(stage.stageWidth, stage.stageHeight, false, 0, 0, 4);
          camera.view = this.view;
-         addChild(this.view);
+         stage.addChild(this.view);
+         stage.addChild(camera.diagram);
          addChild(this.overlay = new Sprite());
          addChild(this.screenMask = new Sprite());
          addChild(this.axisIndicator = new AxisIndicator(50));
@@ -48,41 +60,13 @@ package tanki2.display
       public function update() : void
       {
          this.axisIndicator.update(this.camera);
-         this.camera.render();
+         this.camera.render(this.stage3D);
       }
       
       public function resize(w:int, h:int) : void
       {
-         this._width = w;
-         this._height = h;
-         this.view.width = w * this.screenSize;
-         this.view.height = h * this.screenSize;
-         var viewX:int = w * (1 - this.screenSize) >> 1;
-         var viewY:int = h * (1 - this.screenSize) >> 1;
-         this.overlay.x = this.camera.view.x = viewX;
-         this.overlay.y = this.camera.view.y = viewY;
-         var gfx:Graphics = this.screenMask.graphics;
-         gfx.clear();
-         gfx.beginFill(0,0.75);
-         gfx.drawRect(0,0,w,h);
-         gfx.lineStyle(0,8355711);
-         gfx.drawRect(viewX,viewY,this.view.width,this.view.height);
-         gfx.endFill();
-         this.axisIndicator.y = stage.stageHeight - 2 * this.axisIndicator.size;
-      }
-      
-      public function setScreenSize(value:Number) : void
-      {
-         this.screenSize = value;
-         if(this.screenSize < 0.1)
-         {
-            this.screenSize = 0.1;
-         }
-         if(this.screenSize > 1)
-         {
-            this.screenSize = 1;
-         }
-         this.resize(this._width,this._height);
+         this.camera.view.width = stage.stageWidth;
+			this.camera.view.height = stage.stageHeight;
       }
    }
 }

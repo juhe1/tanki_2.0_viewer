@@ -1,4 +1,4 @@
-package alternativa.tanks.utils
+package tanki2.utils
 {
    import alternativa.engine3d.core.Object3D;
    import alternativa.math.Matrix4;
@@ -24,6 +24,20 @@ package alternativa.tanks.utils
          object.rotationX = eulerAngles.x;
          object.rotationY = eulerAngles.y;
          object.rotationZ = eulerAngles.z;
+      }
+      
+      public static function findChildsWithNameBeginning(object:Object3D, nameBeginning:String):Vector.<Object3D>
+      {
+         var objects:Vector.<Object3D> = new Vector.<Object3D>();
+         for (var childIndex:int; childIndex < object.numChildren; childIndex++ )
+         {
+            var child:Object3D = object.getChildAt(childIndex);
+            if (child.name.indexOf(nameBeginning) == 0)
+            {
+               objects.push(child);
+            }
+         }
+         return objects;
       }
    }
 }

@@ -1,4 +1,4 @@
-package alternativa.tanks.utils
+package tanki2.utils
 {
    import flash.display.InteractiveObject;
    import flash.events.KeyboardEvent;

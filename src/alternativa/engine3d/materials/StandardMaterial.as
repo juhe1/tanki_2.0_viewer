@@ -117,7 +117,7 @@ package alternativa.engine3d.materials {
 		 * @private
 		 */
 		alternativa3d static var fogTexture:TextureResource;
-
+      
 		// inputs : position
 		private static const _passVaryingsProcedure:Procedure = new Procedure([
 			"#v0=vPosition",
@@ -296,7 +296,7 @@ package alternativa.engine3d.materials {
 		private static const _addLightMapProcedure:Procedure = new Procedure([
 			"#v0=vUV1",
 			"#s0=sLightMap",
-			"tex t0, v0, s0 <2d,repeat,linear,miplinear>",
+			"tex t0, v0, s0 <2d,repeat,linear,mipnone>",
 			"add t0, t0, t0",
 			"add o0.xyz, i0.xyz, t0.xyz"
 		], "applyLightMapProcedure");
