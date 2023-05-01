@@ -24,6 +24,6 @@ I have used some decompiled code from TLVK, so you should not use code from this
 ## Screen shots
 ![Tank](/images/Tank2.png)
 
-![Tank](/images/Tank2.png)
+![Tank](/images/Tank1.png)
 
 ![Map](/images/Map.png)
