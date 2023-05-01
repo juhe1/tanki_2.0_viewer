@@ -3,13 +3,13 @@ Tanki 2.0 viewer is opensource remake of tanki 2.0 demo. The original tanki 2.0 
 ## Features
 * Tanki 2.0 map loader
 * Tanki 2.0 hull and turret loader
-	- Tracks are missing for now.
+	- Tracks are missing for now
 * Tank physics (So you can drive around.)
 * Free camera and follow camera
 ## TODO
-* Tracks
-* Fix follow camera.
-* Better free camera (i want smoother camera controls).
+* Fix follow camera
+* Add tracks for tank
+* Add better free camera (i want smoother camera controls)
 ## Screen shots
 ![Tank](/images/Tank2.png)
 
