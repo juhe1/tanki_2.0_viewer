@@ -12,5 +12,7 @@ Tanki 2.0 viewer is opensource remake of tanki 2.0 demo. The original tanki 2.0 
 * Better free camera (i want smoother camera controls).
 ## Screen shots
 ![Tank](/images/Tank2.png)
+
 ![Tank](/images/Tank2.png)
+
 ![Map](/images/Map.png)
