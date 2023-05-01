@@ -1,5 +1,5 @@
 # Tanki 2.0 viewer
-Tanki 2.0 viewer is opensource remake of tanki 2.0 demo. The original tanki 2.0 demo was created by alternativa games to show off some stuff that they developed for game that they never released. That game was named "Tanki 2.0" and they planed to replace their another game named "Tanki Online" with it.
+Tanki 2.0 viewer is opensource remake of tanki 2.0 demo. The original tanki 2.0 demo was created by alternativa games to show off some stuff, they developed for Tanki 2.0. Tanki 2.0 was game made by Alternativa Games that was never released. They planed to replace their another game named Tanki Online with Tanki 2.0, but that didn't happen.
 Video of original Tanki 2.0 demo (this video is not mine): https://youtube.com/watch?v=GOkeDkOYoSA
 
 I have used some decompiled code from TLVK, so you should not use code from this repository for anything that will be published to public, because it will be probably illegal.
