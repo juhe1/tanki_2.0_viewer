@@ -21,7 +21,7 @@ I have used some decompiled code from TLVK, so you should not use code from this
 * Fix light beams (They only work when there is nothing behind)
 * Add tracks for tank
 * Add better free camera (i want smoother camera controls)
-## Screen shots
+## Screenshots
 ![Tank](/images/Tank2.png)
 
 ![Tank](/images/Tank1.png)
