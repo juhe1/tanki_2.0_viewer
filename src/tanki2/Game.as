@@ -219,14 +219,14 @@ package tanki2
             "colormapName":"flora",\
             "physicsData":{\
                "mass":1600,\
-               "power":309900,\
-               "maxForwardSpeed":1000,\
-               "maxBackwardSpeed":1000,\
+               "power":209900,\
+               "maxForwardSpeed":1300,\
+               "maxBackwardSpeed":1300,\
                "maxTurnSpeed":0.001,\
-               "springDamping":1000,\
+               "springDamping":900,\
                "dynamicFriction":0.5,\
-               "brakeFriction":4,\
-               "sideFriction":2\
+               "brakeFriction":0.9,\
+               "sideFriction":4\
             }\
          }]}');
          

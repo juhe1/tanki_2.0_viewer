@@ -30,5 +30,6 @@ package tanki2.vehicles.tank
       {
          this.texturesByName[textureName] = texture;
       }
+      
    }
 }

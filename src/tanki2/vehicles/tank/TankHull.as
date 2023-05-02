@@ -4,6 +4,7 @@ package tanki2.vehicles.tank
    import alternativa.engine3d.loaders.ParserMaterial;
    import alternativa.engine3d.materials.TextureMaterial;
    import alternativa.engine3d.objects.Mesh;
+   import alternativa.engine3d.objects.Skin;
    import alternativa.engine3d.objects.Surface;
    import alternativa.engine3d.resources.ATFTextureResource;
    import alternativa.engine3d.resources.ExternalTextureResource;
@@ -22,9 +23,17 @@ package tanki2.vehicles.tank
       
       public var shadowPlane:Mesh;
       
-      public var rightWheels:Vector.<Object3D>;
+      public var rightWheels:Vector.<Mesh>;
       
-      public var leftWheels:Vector.<Object3D>;
+      public var leftWheels:Vector.<Mesh>;
+      
+      public var leftTrack:Skin;
+      
+      public var rightTrack:Skin;
+      
+      public var trackDiffuseMap:ATFTextureResource;
+      
+      public var trackNormalMap:ATFTextureResource;
       
       private var part:Part;
       
@@ -32,13 +41,16 @@ package tanki2.vehicles.tank
       {
          this.part = part;
          this.physicsProfiles = new Vector.<TankPhysicsData>();
-         this.rightWheels = new Vector.<Object3D>();
-         this.leftWheels = new Vector.<Object3D>();
+         this.rightWheels = new Vector.<Mesh>();
+         this.leftWheels = new Vector.<Mesh>();
+       
+         this.trackDiffuseMap = part.getTextureByName("tracks_diffuse");
+         this.trackNormalMap = part.getTextureByName("tracks_normalmap");
          
          var object:Object3D = this.part.object;
          this.addShadowPlane(object);
          this.addMountPoint(object);
-         this.addWheels(object);
+         this.addTracks(object);
          this.addMainMesh(object);
          
          super(part);
@@ -53,23 +65,31 @@ package tanki2.vehicles.tank
       {
          object.removeChildren(0);
          
-         for each (var wheel:Object3D in this.leftWheels) 
-         {
-            object.addChild(wheel);
-         }
-         
-         for each (var wheel:Object3D in this.rightWheels) 
-         {
-            object.addChild(wheel);
-         }
+         //for each (var wheel:Object3D in this.leftWheels.concat(this.rightWheels)) 
+         //{
+         //   object.addChild(wheel);
+         //}
+         //
+         //object.addChild(this.leftTrack);
+         //object.addChild(this.rightTrack);
          
          this.mainMesh = Mesh(object);
       }
       
-      private function addWheels(object:Object3D):void 
+      private function addTracks(object:Object3D):void 
       {
-         this.rightWheels = Utils3D.findChildsWithNameBeginning(object, "whR");
-         this.leftWheels = Utils3D.findChildsWithNameBeginning(object, "whL");
+         for each (var wheelObject:Object3D in Utils3D.findChildsWithNameBeginning(object, "whR")) 
+         {
+            this.rightWheels.push(Mesh(wheelObject));
+         }
+         
+         for each (var wheelObject:Object3D in Utils3D.findChildsWithNameBeginning(object, "whL")) 
+         {
+            leftWheels.push(Mesh(wheelObject));
+         }
+         
+         this.leftTrack = Skin(object.getChildByName("LTrack"));
+         this.rightTrack = Skin(object.getChildByName("RTrack"));
       }
       
       private function addMountPoint(object:Object3D):void 
@@ -112,6 +132,26 @@ package tanki2.vehicles.tank
             return this.part.getTextureByName(textureName);
          }
          return null;
+      }
+      
+      public function cloneLeftWheels():Vector.<Mesh>
+      {
+         return this.cloneWheels(this.leftWheels);
+      }
+      
+      public function cloneRightWheels():Vector.<Mesh>
+      {
+         return this.cloneWheels(this.rightWheels);
+      }
+      
+      private function cloneWheels(wheels:Vector.<Mesh>):Vector.<Mesh>
+      {
+         var newWheels:Vector.<Mesh> = new Vector.<Mesh>();
+         for each (var wheel:Mesh in wheels) 
+         {
+            newWheels.push(wheel.clone());
+         }
+         return newWheels;
       }
    }
 }

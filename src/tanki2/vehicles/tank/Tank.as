@@ -56,7 +56,7 @@ package tanki2.vehicles.tank
       {
          super(GameObject.getId());
          this.chassis = new Chassis(this);
-         this.skin = new TankSkin();
+         this.skin = new TankSkin(this.chassis);
          this.setHull(hull);
          this.setTurret(turret);
          this.setColormap(colormap);
@@ -181,7 +181,7 @@ package tanki2.vehicles.tank
       override public function update(time:uint, deltaMsec:uint, deltaSec:Number, t:Number) : void
       {
          this.updateSkin(t);
-         this.skin.updateTracks(deltaSec * this.chassis._leftTrack.getSpeed(),deltaSec * this.chassis._rightTrack.getSpeed());
+         this.skin.updateTracks(deltaSec * this.chassis._leftTrack.getSpeed(),deltaSec * this.chassis._rightTrack.getSpeed(), game.physicsSystem.physicsScene);
          if(this.weapon != null)
          {
             this.weapon.update(time,deltaMsec);
@@ -216,7 +216,7 @@ package tanki2.vehicles.tank
          {
             this.interpolatedTurretDirection = oldAngle + t * (newAngle - oldAngle);
          }
-         this.skin.updateTransform(this.interpolatedPosition,this.interpolatedOrientation,this.interpolatedTurretDirection);
+         this.skin.updateTransform(this.interpolatedPosition, this.interpolatedOrientation, this.interpolatedTurretDirection);
       }
       
       private function updatePhysicsVisualizer() : void

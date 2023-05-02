@@ -1,5 +1,6 @@
 package tanki2.vehicles.tank 
 {
+   import alternativa.engine3d.core.Object3D;
    import alternativa.engine3d.objects.Mesh;
    import alternativa.engine3d.resources.ATFTextureResource;
 	/**

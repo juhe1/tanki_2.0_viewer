@@ -3,14 +3,16 @@ package tanki2.vehicles.tank.skin
    import alternativa.engine3d.alternativa3d;
    import alternativa.engine3d.core.Camera3D;
    import alternativa.engine3d.core.Object3D;
+   import alternativa.engine3d.materials.StandardMaterial;
    import alternativa.engine3d.materials.TextureMaterial;
    import alternativa.engine3d.objects.Mesh;
+   import alternativa.engine3d.objects.Skin;
    import alternativa.engine3d.objects.Surface;
    import alternativa.engine3d.resources.BitmapTextureResource;
    import alternativa.math.Matrix4;
    import alternativa.math.Quaternion;
    import alternativa.math.Vector3;
-   import tanki2.Game;
+   import alternativa.physics.PhysicsScene;
    import tanki2.Scene3D;
    import tanki2.vehicles.tank.TankConst;
    import tanki2.vehicles.tank.TankHull;
@@ -19,6 +21,7 @@ package tanki2.vehicles.tank.skin
    import flash.display.BitmapData;
    import flash.display.BlendMode;
    import flash.display.Shape;
+   import tanki2.vehicles.tank.physics.Chassis;
    
    use namespace alternativa3d;
    
@@ -44,10 +47,17 @@ package tanki2.vehicles.tank.skin
       
       private var _turretMesh:Mesh;
       
+      private var leftTrackSkin:TrackSkin;
+      
+      private var rightTrackSkin:TrackSkin;
+      
       private var container:Object3D;
       
-      public function TankSkin()
+      private var chassis:Chassis;
+      
+      public function TankSkin(chassis:Chassis)
       {
+         this.chassis = chassis;
          this._hullMesh = new Mesh();
          this._turretMesh = new Mesh();
          super();
@@ -80,7 +90,7 @@ package tanki2.vehicles.tank.skin
          this.container = scene3D.getMap();
          if(this._hullMesh != null)
          {
-            container.addChild(this._hullMesh);
+            this.addHullToContainer()
             
          }
          if(this._turretMesh != null)
@@ -97,7 +107,7 @@ package tanki2.vehicles.tank.skin
          {
             if(this._hullMesh != null)
             {
-               this.container.removeChild(this._hullMesh);
+               this.removeHullFromContainer();
             }
             if(this._turretMesh != null)
             {
@@ -127,16 +137,45 @@ package tanki2.vehicles.tank.skin
          {
             this.container.removeChild(this._hullMesh);
          }
+         
          this._hull = value;
+         
          if(this._hull != null)
          {
+            this.leftTrackSkin = new TrackSkin(null, null, this._hull.cloneLeftWheels(), Skin(this._hull.leftTrack.clone()), chassis);
+            this.rightTrackSkin = new TrackSkin(null, null, this._hull.cloneRightWheels(), Skin(this._hull.rightTrack.clone()), chassis);
+            
             this._hullMesh = Mesh(this._hull.mainMesh.clone());
             if(this.container != null)
             {
-               this.container.addChild(this._hullMesh);
+               this.addHullToContainer();
             }
          }
          this.updatePartTexture(this._hull, this._hullMesh);
+      }
+      
+      private function addHullToContainer():void 
+      {
+         this.container.addChild(this._hullMesh);
+         _hullMesh.addChild(this.leftTrackSkin.track);
+         _hullMesh.addChild(this.rightTrackSkin.track);
+         
+         for each (var wheel in this.leftTrackSkin.wheels.concat(this.rightTrackSkin.wheels)) 
+         {
+            _hullMesh.addChild(wheel);
+         }
+      }
+      
+      private function removeHullFromContainer():void 
+      {
+         this.container.removeChild(this._hullMesh);
+         this.container.removeChild(this.leftTrackSkin.track);
+         this.container.removeChild(this.rightTrackSkin.track);
+         
+         for each (var wheel in this.leftTrackSkin.wheels.concat(this.rightTrackSkin.wheels)) 
+         {
+            this.container.removeChild(wheel);
+         }
       }
       
       public function getTurret() : TankTurret
@@ -200,15 +239,30 @@ package tanki2.vehicles.tank.skin
          }
       }
       
-      public function updateTracks(deltaLeft:Number, deltaRight:Number) : void
+      public function updateTracks(deltaLeft:Number, deltaRight:Number, physicsScene:PhysicsScene) : void
       {
-         
+         this.leftTrackSkin.moveTrack(deltaLeft, physicsScene);
+         this.rightTrackSkin.moveTrack(deltaRight, physicsScene);
       }
       
       private function updatePartTexture(part:TankPart, mesh:Mesh) : void
       {
          var material:TankMaterial = new TankMaterial(part.diffuseMap, this._colormap, part.surfaceMap, part.normalMap);
          mesh.setMaterialToAllSurfaces(material);
+         
+         if (part is TankHull)
+         {
+            var tankHull:TankHull = TankHull(part);
+            var wheelMaterial:TextureMaterial = new TextureMaterial(part.diffuseMap);
+            
+            var rightTrackMaterial:TrackMaterial = new TrackMaterial(tankHull.trackDiffuseMap, tankHull.trackNormalMap);
+            this.rightTrackSkin.setTrackMaterial(rightTrackMaterial);
+            this.rightTrackSkin.setWheelsMaterial(wheelMaterial);
+            
+            var leftTrackMaterial:TrackMaterial = new TrackMaterial(tankHull.trackDiffuseMap, tankHull.trackNormalMap);
+            this.leftTrackSkin.setTrackMaterial(leftTrackMaterial);
+            this.leftTrackSkin.setWheelsMaterial(wheelMaterial);
+         }
       }
       
       public function getGlobalMuzzlePosition(index:int) : Vector3
