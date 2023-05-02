@@ -13,13 +13,12 @@ I have used some decompiled code from TLVK, so you should not use code from this
 ## Features
 * Tanki 2.0 map loader
 * Tanki 2.0 hull and turret loader
-	- Tracks are missing for now
+	- Dynamic tracks
 * Tank physics (So you can drive around.)
 * Free camera and follow camera
 ## TODO
 * Fix follow camera
 * Fix light beams (They only work when there is nothing behind)
-* Add tracks for tank
 * Add better free camera (i want smoother camera controls)
 ## Screenshots
 ![Tank](/images/Tank2.png)
