@@ -46,6 +46,7 @@ package tanki2.maploader
             else if(light is AmbientLight)
             {
                addChild(AmbientLight(light));
+               light.intensity *= 2;
             }
             else if(light is SpotLight)
             {
@@ -55,9 +56,9 @@ package tanki2.maploader
             {
                addChild(OmniLight(light));
             }
-            if(light is AmbientLight || light is DirectionalLight)
+            if(light is DirectionalLight)
             {
-               light.intensity *= 2;
+               light.intensity *= 2
             }
             if(light is DirectionalLight || light is AmbientLight)
             {

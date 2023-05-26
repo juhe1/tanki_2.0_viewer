@@ -318,6 +318,7 @@ package tanki2.display.controllers
          this.rotation.z += deltaYaw;
          currentPosition.copy(this.position);
          currentRotation.copy(this.rotation);
+		 currentPosition.z -= 200;
          setPosition(currentPosition);
          setOrientation(currentRotation);
       }
@@ -338,7 +339,7 @@ package tanki2.display.controllers
          this.cameraPosition.x = bezier(this._cameraT,this.point0.x,this.point1.x,this.point2.x,this.point3.x);
          this.cameraPosition.y = bezier(this._cameraT,this.point0.y,this.point1.y,this.point2.y,this.point3.y);
          this.baseElevation = Math.atan2(this.cameraPosition.x,this.cameraPosition.y);
-         this.cameraDistance = this.cameraPosition.length;
+         this.cameraDistance = this.cameraPosition.length + 600;
          this.lastMinDistanceTime = 0;
       }
       
@@ -399,7 +400,7 @@ package tanki2.display.controllers
          this.displacement.x = rayDirection.x * rayLength;
          this.displacement.y = rayDirection.y * rayLength;
          this.displacement.z = rayDirection.z * rayLength;
-         if(this.collider.getCollision(this.rayOrigin3D,this.displacement,this.collisionPoint,this.collisionNormal,this.collisionObject,this.collisionFilter))
+         /*if(this.collider.getCollision(this.rayOrigin3D,this.displacement,this.collisionPoint,this.collisionNormal,this.collisionObject,this.collisionFilter))
          {
             offset = this.collider.radiusX + 0.1;
             this.v.x = this.collisionPoint.x + this.collisionNormal.x * offset;
@@ -407,11 +408,11 @@ package tanki2.display.controllers
             this.v.z = this.collisionPoint.z + this.collisionNormal.z * offset;
          }
          else
-         {
+         {*/
             this.v.x = this.rayOrigin3D.x + this.displacement.x;
             this.v.y = this.rayOrigin3D.y + this.displacement.y;
             this.v.z = this.rayOrigin3D.z + this.displacement.z;
-         }
+        // }
          return this.v;
       }
       

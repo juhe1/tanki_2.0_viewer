@@ -21,6 +21,7 @@ package tanki2.vehicles.tank
          this.flagMountPoint = new Vector3(flagMountPointObject.matrix.position.x, flagMountPointObject.matrix.position.y, flagMountPointObject.matrix.position.z)
          
          this.mainMesh = Mesh(part.object)
+         this.mainMesh.geometry.calculateTangents(0);
          super(part);
       }
       

@@ -8,10 +8,11 @@
     <movie fps="60" />
     <movie width="800" />
     <movie height="600" />
-    <movie version="25" />
+    <movie version="28" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
+    <movie preferredSDK="D:\juho1\tankkin_modaus\united_tanks\jounku_toisen_sourcet\SDK" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>

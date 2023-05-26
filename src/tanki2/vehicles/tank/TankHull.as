@@ -74,6 +74,7 @@ package tanki2.vehicles.tank
          //object.addChild(this.rightTrack);
          
          this.mainMesh = Mesh(object);
+         this.mainMesh.geometry.calculateTangents(0);
       }
       
       private function addTracks(object:Object3D):void 

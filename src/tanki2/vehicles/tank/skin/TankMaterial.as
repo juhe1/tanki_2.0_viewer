@@ -177,9 +177,9 @@ package tanki2.vehicles.tank.skin {
 		private static const _setGlossinessFromTextureProcedure:Procedure = new Procedure([
 			"#v0=vUV",
 			"#c0=cSurface",
-			"#s0=sGlossiness",
-			"tex t0, v0, s0 <2d, repeat, linear, miplinear>",
-			"mul o0.w, t0.y, c0.y"
+			"#s0=sSurface",
+			"tex t0, v0, s0 <2d, clamp, linear, miplinear>",
+			"mul o0.w, t0.z, c0.y"
 		], "setGlossinessFromTextureProcedure");
 
 		// outputs : normal, viewVector
@@ -214,9 +214,10 @@ package tanki2.vehicles.tank.skin {
 			"#c0=cAmbientColor",
 			"#s0=sBump",
 			// Extract normal from the texture
-			"tex t0, v3, s0 <2d,repeat,linear,miplinear>",
+			"tex t0, v3, s0 <2d,clamp,linear,miplinear>",
 			"add t0, t0, t0",
 			"sub t0.xyz, t0.xyz, c0.www",
+         "neg t0.y, t0.y",
 			// Normalization
 			"nrm o0.xyz, t0.xyz",
 			// Returns normalized vector of view
@@ -226,9 +227,9 @@ package tanki2.vehicles.tank.skin {
 		// Apply specular map color to a flare
 		private static const _applySpecularProcedure:Procedure = new Procedure([
 			"#v0=vUV",
-			"#s0=sSpecular",
-			"tex t0, v0, s0 <2d, repeat,linear,miplinear>",
-         "mul o0.xyz, o0.xyz, t0.zzz"
+			"#s0=sSurface",
+			"tex t0, v0, s0 <2d, clamp,linear,miplinear>",
+         "mul o0.xyz, o0.xyz, t0.yyy"
 		], "applySpecularProcedure");
 
 		//Apply light and flare to diffuse
@@ -312,19 +313,25 @@ package tanki2.vehicles.tank.skin {
 			"mov v0, a0"
 		], "passLightMapUVProcedure");
       
-      private static const _addColorMapProcedure:Procedure = new Procedure([
+      private static const getTankDiffuseProcedure:Procedure = new Procedure([
          "#v0=vUV",
          "#c0=cTiling",
+         "#c1=cDiffuseStrength",
          "#s0=sColor",
-         "#s1=sSurface",
-         "mul t2, v0, c0",
-         "tex t0, t2, s0 <2d,repeat,linear,miplinear>",
-         "tex t1, v0, s1 <2d,repeat,linear,miplinear>",
-         "mul t2, i0.xyz, t1.xxx",
-         "sub i0, i0, t2",
-         "mul t0, t0.xyz, t1.xxx",
-         "add o0.xyz, i0.xyz, t0.xyz"
-		], "applyColorMapProcedure");
+         "#s1=sDiffuse",
+         "#s2=sSurface",
+         "mul t0, v0, c0",
+         "tex t1, t0, s0 <2d, repeat, linear, miplinear>",
+         "tex t0, v0, s1 <2d, clamp, linear, miplinear>",
+         "add t2, t0, t0",
+         "mul t2, t2, t1",
+         "tex t1, v0, s2 <2d, clamp, linear, miplinear>",
+         "mul t2, t2, t1.x",
+         "add t2, t2, t0",
+         "mul t0, t0, t1.x",
+         "sub o0, t2, t0",
+         "mul o0, o0, c1.xxx"
+		], "getDiffuseProcedure");
 
 		/**
 		 * @private
@@ -340,7 +347,7 @@ package tanki2.vehicles.tank.skin {
 		 */
 		public var normalMap:TextureResource;
 
-		private var _normalMapSpace:int = NormalMapSpace.TANGENT_RIGHT_HANDED;
+		private var _normalMapSpace:int = NormalMapSpace.OBJECT;
 		/**
 		 * Type of the normal map. Should be defined by constants of   <code>NormalMapSpace</code> class.
 		 *
@@ -363,15 +370,6 @@ package tanki2.vehicles.tank.skin {
 		}
 
 		/**
-		 * Specular map.
-		 */
-		public var specularMap:TextureResource;
-		/**
-		 * Glossiness map.
-		 */
-		public var glossinessMap:TextureResource;
-
-		/**
 		 * Light map.
 		 */
 		public var lightMap:TextureResource;
@@ -380,30 +378,33 @@ package tanki2.vehicles.tank.skin {
       
       public var surfaceMap:TextureResource;
       
-      public var tilingX:Number = 6;
-      public var tilingY:Number = 6;
+      public var tilingX:Number = 3;
+      public var tilingY:Number = 3;
+      
+      public var diffuseStrength:Number = 0.6;
       
 		/**
 		 * Number of the UV-channel for light map.
 		 */
 		public var lightMapChannel:uint = 0;
 		/**
-		 * Glossiness. Multiplies with  <code>glossinessMap</code> value.
+		 * Glossiness. Multiplies with surfaceMap glossiness data
 		 */
-		public var glossiness:Number = 65;
+		public var glossiness:Number = 40;
 
 		/**
-		 * Brightness of a flare. Multiplies with  <code>specularMap</code> value.
+		 * Brightness of a flare. Multiplies with surfaceMap specular data.
 		 */
-		public var specularPower:Number = 0.6;
+		public var specularPower:Number = 0.3;
       
-		public function TankMaterial(diffuseMap:TextureResource = null, colorMap:TextureResource = null, surfaceMap:TextureResource = null, normalMap:TextureResource = null, opacityMap:TextureResource = null) {
-			super(diffuseMap, opacityMap);
+      public var glossinessEnabled:Boolean = true;
+      public var specularEnabled:Boolean = true;
+      
+		public function TankMaterial(diffuseMap:TextureResource = null, colorMap:TextureResource = null, surfaceMap:TextureResource = null, normalMap:TextureResource = null) {
+			super(diffuseMap);
 			this.normalMap = normalMap;
          this.colorMap = colorMap;
          this.surfaceMap = surfaceMap;
-			this.specularMap = surfaceMap;
-			this.glossinessMap = surfaceMap;
 		}
 
 		/**
@@ -429,14 +430,6 @@ package tanki2.vehicles.tank.skin {
 			if (lightMap != null &&
 					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(lightMap)) as Class, resourceType)) {
 				resources[lightMap] = true;
-			}
-			if (glossinessMap != null &&
-					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(glossinessMap)) as Class, resourceType)) {
-				resources[glossinessMap] = true;
-			}
-			if (specularMap != null &&
-					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(specularMap)) as Class, resourceType)) {
-				resources[specularMap] = true;
 			}
 		}
 
@@ -629,7 +622,7 @@ package tanki2.vehicles.tank.skin {
 
 				vertexLinker.addProcedure(getPassUVProcedure());
 
-				if (glossinessMap != null) {
+				if (glossinessEnabled) {
 					fragmentLinker.addProcedure(_setGlossinessFromTextureProcedure);
 					fragmentLinker.setOutputParams(_setGlossinessFromTextureProcedure, "tTotalHighLight");
 				} else {
@@ -751,14 +744,14 @@ package tanki2.vehicles.tank.skin {
 				}
 
 				var outputProcedure:Procedure;
-				if (specularMap != null) {
+				if (specularEnabled) {
 					fragmentLinker.addProcedure(_applySpecularProcedure);
 					fragmentLinker.setOutputParams(_applySpecularProcedure, "tTotalHighLight");
 					outputProcedure = _applySpecularProcedure;
 				}
 
 				fragmentLinker.declareVariable("tColor");
-				outputProcedure = opacityMap != null ? getDiffuseOpacityProcedure : getDiffuseProcedure;
+				outputProcedure = opacityMap != null ? getDiffuseOpacityProcedure : getTankDiffuseProcedure;
 				fragmentLinker.addProcedure(outputProcedure);
 				fragmentLinker.setOutputParams(outputProcedure, "tColor");
 
@@ -768,9 +761,9 @@ package tanki2.vehicles.tank.skin {
 					fragmentLinker.setOutputParams(outputProcedure, "tColor");
 				}
             
-            fragmentLinker.addProcedure(_addColorMapProcedure);
-            fragmentLinker.setInputParams(_addColorMapProcedure, "tColor");
-            fragmentLinker.setOutputParams(_addColorMapProcedure, "tColor");
+            //fragmentLinker.addProcedure(_addColorMapProcedure);
+            //fragmentLinker.setInputParams(_addColorMapProcedure, "tColor");
+            //fragmentLinker.setOutputParams(_addColorMapProcedure, "tColor");
 
 				fragmentLinker.addProcedure(_mulLightingProcedure, "tColor", "tTotalLight", "tTotalHighLight");
 
@@ -827,8 +820,9 @@ package tanki2.vehicles.tank.skin {
 			drawUnit.setProjectionConstants(camera, program.cProjMatrix, object.localToCameraTransform);
 			 // Set options for a surface. X should be 0.
 			drawUnit.setFragmentConstantsFromNumbers(program.cSurface, 0, glossiness, specularPower, 1);
-			drawUnit.setFragmentConstantsFromNumbers(program.cThresholdAlpha, alphaThreshold, 0, 0, alpha);
+			//drawUnit.setFragmentConstantsFromNumbers(program.cThresholdAlpha, alphaThreshold, 0, 0, alpha);
          drawUnit.setFragmentConstantsFromNumbers(program.cTiling, this.tilingX, this.tilingY, 0, 0);
+         drawUnit.setFragmentConstantsFromNumbers(program.cDiffuseStrength, this.diffuseStrength, 0, 0, 0);
 
 			var light:Light3D;
 			var len:Number;
@@ -928,12 +922,6 @@ package tanki2.vehicles.tank.skin {
 			if (opacityMap != null) {
 				drawUnit.setTextureAt(program.sOpacity, opacityMap._texture);
 			}
-			if (glossinessMap != null) {
-				drawUnit.setTextureAt(program.sGlossiness, glossinessMap._texture);
-			}
-			if (specularMap != null) {
-				drawUnit.setTextureAt(program.sSpecular, specularMap._texture);
-			}
 
 			if (isFirstGroup) {
 				if (lightMap != null) {
@@ -1031,7 +1019,7 @@ package tanki2.vehicles.tank.skin {
 		override alternativa3d function collectDraws(camera:Camera3D, surface:Surface, geometry:Geometry, lights:Vector.<Light3D>, lightsLength:int, useShadow:Boolean, objectRenderPriority:int = -1):void {
 			if (diffuseMap == null || normalMap == null || diffuseMap._texture == null || normalMap._texture == null) return;
 			// Check if textures uploaded in to the context.
-			if (opacityMap != null && opacityMap._texture == null || glossinessMap != null && glossinessMap._texture == null || specularMap != null && specularMap._texture == null || lightMap != null && lightMap._texture == null) return;
+			if (opacityMap != null && opacityMap._texture == null || lightMap != null && lightMap._texture == null) return;
 
 			if (camera.context3DProperties.isConstrained) {
 				// fallback to simpler material
@@ -1118,7 +1106,7 @@ package tanki2.vehicles.tank.skin {
 			if (groupsCount == 0 && shadowGroupLength == 0) {
 				// There is only Ambient light on the scene
 				// Form key
-				materialKey = ((lightMap != null) ? LIGHT_MAP_BIT : 0) | ((glossinessMap != null) ? GLOSSINESS_MAP_BIT : 0) | ((specularMap != null) ? SPECULAR_MAP_BIT : 0);
+				materialKey = ((lightMap != null) ? LIGHT_MAP_BIT : 0) | ((glossinessEnabled) ? GLOSSINESS_MAP_BIT : 0) | ((specularEnabled) ? SPECULAR_MAP_BIT : 0);
 
 				if (opaquePass && alphaThreshold <= alpha) {
 					if (alphaThreshold > 0) {
@@ -1155,7 +1143,7 @@ package tanki2.vehicles.tank.skin {
 					// Group of lights without shadow
 					// Form key
 					materialKey = (isFirstGroup) ? ((lightMap != null) ? LIGHT_MAP_BIT : 0) : 0;
-					materialKey |= (_normalMapSpace << NORMAL_MAP_SPACE_OFFSET) | ((glossinessMap != null) ? GLOSSINESS_MAP_BIT : 0) | ((specularMap != null) ? SPECULAR_MAP_BIT : 0);
+					materialKey |= (_normalMapSpace << NORMAL_MAP_SPACE_OFFSET) | ((glossinessEnabled) ? GLOSSINESS_MAP_BIT : 0) | ((specularEnabled) ? SPECULAR_MAP_BIT : 0);
 					var omniLightCount:int = 0;
 					var directionalLightCount:int = 0;
 					var spotLightCount:int = 0;
@@ -1208,7 +1196,7 @@ package tanki2.vehicles.tank.skin {
 						light = shadowGroup[j];
 						// Form key
 						materialKey = (isFirstGroup) ? ((lightMap != null) ? LIGHT_MAP_BIT : 0) : 0;
-						materialKey |= (_normalMapSpace << NORMAL_MAP_SPACE_OFFSET) | ((glossinessMap != null) ? GLOSSINESS_MAP_BIT : 0) | ((specularMap != null) ? SPECULAR_MAP_BIT : 0);
+						materialKey |= (_normalMapSpace << NORMAL_MAP_SPACE_OFFSET) | ((glossinessEnabled) ? GLOSSINESS_MAP_BIT : 0) | ((specularEnabled) ? SPECULAR_MAP_BIT : 0);
 						materialKey |= light.shadow.type << SHADOW_OFFSET;
 						if (light is OmniLight) materialKey |= 1 << OMNI_LIGHT_OFFSET;
 						else if (light is DirectionalLight) materialKey |= 1 << DIRECTIONAL_LIGHT_OFFSET;
@@ -1253,7 +1241,7 @@ package tanki2.vehicles.tank.skin {
 		 * @inheritDoc
 		 */
 		override public function clone():Material {
-			var res:TankMaterial = new TankMaterial(diffuseMap, colorMap, surfaceMap, normalMap, opacityMap);
+			var res:TankMaterial = new TankMaterial(diffuseMap, colorMap, surfaceMap, normalMap);
 			res.clonePropertiesFrom(this);
 			return res;
 		}
@@ -1292,13 +1280,12 @@ class TankMaterialProgram extends ShaderProgram {
 	public var cSurface:int = -1;
 	public var cThresholdAlpha:int = -1;
 	public var cTiling:int = -1;
+   public var cDiffuseStrength:int = -1;
 	public var sDiffuse:int = -1;
 	public var sOpacity:int = -1;
 	public var sBump:int = -1;
 	public var sColor:int = -1;
 	public var sSurface:int = -1;
-	public var sGlossiness:int = -1;
-	public var sSpecular:int = -1;
 	public var sLightMap:int = -1;
 
 	public var cPosition:Vector.<int>;
@@ -1328,13 +1315,12 @@ class TankMaterialProgram extends ShaderProgram {
 
 		cAmbientColor = fragmentShader.findVariable("cAmbientColor");
 		cSurface = fragmentShader.findVariable("cSurface");
-		cThresholdAlpha = fragmentShader.findVariable("cThresholdAlpha");
+		//cThresholdAlpha = fragmentShader.findVariable("cThresholdAlpha");
 		cTiling = fragmentShader.findVariable("cTiling");
+		cDiffuseStrength = fragmentShader.findVariable("cDiffuseStrength");
 		sDiffuse = fragmentShader.findVariable("sDiffuse");
 		sOpacity = fragmentShader.findVariable("sOpacity");
 		sBump = fragmentShader.findVariable("sBump");
-		sGlossiness = fragmentShader.findVariable("sGlossiness");
-		sSpecular = fragmentShader.findVariable("sSpecular");
 		sLightMap = fragmentShader.findVariable("sLightMap");
       sColor = fragmentShader.findVariable("sColor");
       sSurface = fragmentShader.findVariable("sSurface");

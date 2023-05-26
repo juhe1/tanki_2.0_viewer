@@ -332,7 +332,7 @@ package tanki2.vehicles.tank.skin {
 		 */
 		public var normalMap:TextureResource;
 
-		private var _normalMapSpace:int = NormalMapSpace.TANGENT_RIGHT_HANDED;
+		private var _normalMapSpace:int = NormalMapSpace.OBJECT;
 		/**
 		 * Type of the normal map. Should be defined by constants of   <code>NormalMapSpace</code> class.
 		 *

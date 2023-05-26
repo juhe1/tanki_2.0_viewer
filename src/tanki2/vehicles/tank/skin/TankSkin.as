@@ -262,6 +262,9 @@ package tanki2.vehicles.tank.skin
             var leftTrackMaterial:TrackMaterial = new TrackMaterial(tankHull.trackDiffuseMap, tankHull.trackNormalMap);
             this.leftTrackSkin.setTrackMaterial(leftTrackMaterial);
             this.leftTrackSkin.setWheelsMaterial(wheelMaterial);
+            
+            material.tilingX = 6;
+            material.tilingY = 6;
          }
       }
       
