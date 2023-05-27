@@ -27,9 +27,11 @@ package tanki2.vehicles.tank.skin {
 	import alternativa.engine3d.materials.compiler.Procedure;
 	import alternativa.engine3d.materials.compiler.VariableType;
 	import alternativa.engine3d.objects.Surface;
+   import alternativa.engine3d.resources.BitmapTextureResource;
 	import alternativa.engine3d.resources.Geometry;
 	import alternativa.engine3d.resources.TextureResource;
    import alternativa.engine3d.materials.TextureMaterial;
+   import flash.display.BitmapData;
 
 	import avmplus.getQualifiedClassName;
 
@@ -332,7 +334,7 @@ package tanki2.vehicles.tank.skin {
 		 */
 		public var normalMap:TextureResource;
 
-		private var _normalMapSpace:int = NormalMapSpace.OBJECT;
+		private var _normalMapSpace:int = NormalMapSpace.TANGENT_RIGHT_HANDED;
 		/**
 		 * Type of the normal map. Should be defined by constants of   <code>NormalMapSpace</code> class.
 		 *
@@ -375,12 +377,12 @@ package tanki2.vehicles.tank.skin {
 		/**
 		 * Glossiness. Multiplies with  <code>glossinessMap</code> value.
 		 */
-		public var glossiness:Number = 100;
+		public var glossiness:Number = 40;
 
 		/**
 		 * Brightness of a flare. Multiplies with  <code>specularMap</code> value.
 		 */
-		public var specularPower:Number = 1;
+		public var specularPower:Number = 0.6;
       
       public var uOffset:Number = 0;
       public var vOffset:Number = 0;
@@ -421,6 +423,11 @@ package tanki2.vehicles.tank.skin {
 			if (specularMap != null &&
 					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(specularMap)) as Class, resourceType)) {
 				resources[specularMap] = true;
+			}
+         
+         if (fogTexture != null &&
+					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(fogTexture)) as Class, resourceType)) {
+				resources[fogTexture] = true;
 			}
 		}
 
@@ -755,24 +762,24 @@ package tanki2.vehicles.tank.skin {
 				fragmentLinker.addProcedure(_mulLightingProcedure, "tColor", "tTotalLight", "tTotalHighLight");
 
 
-//				if (fogMode == SIMPLE || fogMode == ADVANCED) {
-//					fragmentLinker.setOutputParams(_mulLightingProcedure, "tColor");
-//				}
-//				if (fogMode == SIMPLE) {
-//					vertexLinker.addProcedure(passSimpleFogConstProcedure);
-//					vertexLinker.setInputParams(passSimpleFogConstProcedure, positionVar);
-//					fragmentLinker.addProcedure(outputWithSimpleFogProcedure);
-//					fragmentLinker.setInputParams(outputWithSimpleFogProcedure, "tColor");
-//					outputProcedure = outputWithSimpleFogProcedure;
-//				} else if (fogMode == ADVANCED) {
-//					vertexLinker.declareVariable("tProjected");
-//					vertexLinker.setOutputParams(_projectProcedure, "tProjected");
-//					vertexLinker.addProcedure(postPassAdvancedFogConstProcedure);
-//					vertexLinker.setInputParams(postPassAdvancedFogConstProcedure, positionVar, "tProjected");
-//					fragmentLinker.addProcedure(outputWithAdvancedFogProcedure);
-//					fragmentLinker.setInputParams(outputWithAdvancedFogProcedure, "tColor");
-//					outputProcedure = outputWithAdvancedFogProcedure;
-//				}
+				if (fogMode == SIMPLE || fogMode == ADVANCED) {
+					fragmentLinker.setOutputParams(_mulLightingProcedure, "tColor");
+				}
+				if (fogMode == SIMPLE) {
+					vertexLinker.addProcedure(passSimpleFogConstProcedure);
+					vertexLinker.setInputParams(passSimpleFogConstProcedure, positionVar);
+					fragmentLinker.addProcedure(outputWithSimpleFogProcedure);
+					fragmentLinker.setInputParams(outputWithSimpleFogProcedure, "tColor");
+					outputProcedure = outputWithSimpleFogProcedure;
+				} else if (fogMode == ADVANCED) {
+					vertexLinker.declareVariable("tProjected");
+					vertexLinker.setOutputParams(_projectProcedure, "tProjected");
+					vertexLinker.addProcedure(postPassAdvancedFogConstProcedure);
+					vertexLinker.setInputParams(postPassAdvancedFogConstProcedure, positionVar, "tProjected");
+					fragmentLinker.addProcedure(outputWithAdvancedFogProcedure);
+					fragmentLinker.setInputParams(outputWithAdvancedFogProcedure, "tColor");
+					outputProcedure = outputWithAdvancedFogProcedure;
+				}
 
 				fragmentLinker.varyings = vertexLinker.varyings;
 				program = new TrackMaterialProgram(vertexLinker, fragmentLinker, (shadowedLight != null) ? 1 : lightsLength);
@@ -957,46 +964,46 @@ package tanki2.vehicles.tank.skin {
 				camera.renderer.addDrawUnit(drawUnit, objectRenderPriority >= 0 ? objectRenderPriority : Renderer.TRANSPARENT_SORT);
 			}
 
-//			if (fogMode == SIMPLE || fogMode == ADVANCED) {
-//				var lm:Transform3D = object.localToCameraTransform;
-//				var dist:Number = fogFar - fogNear;
-//				drawUnit.setVertexConstantsFromNumbers(program.vertexShader.getVariableIndex("cFogSpace"), lm.i/dist, lm.j/dist, lm.k/dist, (lm.l - fogNear)/dist);
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogRange"), fogMaxDensity, 1, 0, 1 - fogMaxDensity);
-//			}
-//			if (fogMode == SIMPLE) {
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogColor"), fogColorR, fogColorG, fogColorB);
-//			}
-//			if (fogMode == ADVANCED) {
-//				if (fogTexture == null) {
-//					var bmd:BitmapData = new BitmapData(32, 1, false, 0xFF0000);
-//					for (i = 0; i < 32; i++) {
-//						bmd.setPixel(i, 0, ((i/32)*255) << 16);
-//					}
-//					fogTexture = new BitmapTextureResource(bmd);
-//					fogTexture.upload(camera.context3D);
-//				}
-//				var cLocal:Transform3D = camera.localToGlobalTransform;
-//				var halfW:Number = camera.view.width/2;
-//				var leftX:Number = -halfW*cLocal.a + camera.focalLength*cLocal.c;
-//				var leftY:Number = -halfW*cLocal.e + camera.focalLength*cLocal.g;
-//				var rightX:Number = halfW*cLocal.a + camera.focalLength*cLocal.c;
-//				var rightY:Number = halfW*cLocal.e + camera.focalLength*cLocal.g;
-//				// Finding UV
-//				var angle:Number = (Math.atan2(leftY, leftX) - Math.PI/2);
-//				if (angle < 0) angle += Math.PI*2;
-//				var dx:Number = rightX - leftX;
-//				var dy:Number = rightY - leftY;
-//				var lens:Number = Math.sqrt(dx*dx + dy*dy);
-//				leftX /= lens;
-//				leftY /= lens;
-//				rightX /= lens;
-//				rightY /= lens;
-//				var uScale:Number = Math.acos(leftX*rightX + leftY*rightY)/Math.PI/2;
-//				var uRight:Number = angle/Math.PI/2;
-//
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogConsts"), 0.5*uScale, 0.5 - uRight, 0);
-//				drawUnit.setTextureAt(program.fragmentShader.getVariableIndex("sFogTexture"), fogTexture._texture);
-//			}
+			if (fogMode == SIMPLE || fogMode == ADVANCED) {
+				var lm:Transform3D = object.localToCameraTransform;
+				var dist:Number = fogFar - fogNear;
+				drawUnit.setVertexConstantsFromNumbers(program.vertexShader.getVariableIndex("cFogSpace"), lm.i/dist, lm.j/dist, lm.k/dist, (lm.l - fogNear)/dist);
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogRange"), fogMaxDensity, 1, 0, 1 - fogMaxDensity);
+			}
+			if (fogMode == SIMPLE) {
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogColor"), fogColorR, fogColorG, fogColorB);
+			}
+			if (fogMode == ADVANCED) {
+				if (fogTexture == null) {
+					var bmd:BitmapData = new BitmapData(32, 1, false, 0xFF0000);
+					for (i = 0; i < 32; i++) {
+						bmd.setPixel(i, 0, ((i/32)*255) << 16);
+					}
+					fogTexture = new BitmapTextureResource(bmd);
+					fogTexture.upload(camera.context3D);
+				}
+				var cLocal:Transform3D = camera.localToGlobalTransform;
+				var halfW:Number = camera.view.width/2;
+				var leftX:Number = -halfW*cLocal.a + camera.focalLength*cLocal.c;
+				var leftY:Number = -halfW*cLocal.e + camera.focalLength*cLocal.g;
+				var rightX:Number = halfW*cLocal.a + camera.focalLength*cLocal.c;
+				var rightY:Number = halfW*cLocal.e + camera.focalLength*cLocal.g;
+				// Finding UV
+				var angle:Number = (Math.atan2(leftY, leftX) - Math.PI/2);
+				if (angle < 0) angle += Math.PI*2;
+				var dx:Number = rightX - leftX;
+				var dy:Number = rightY - leftY;
+				var lens:Number = Math.sqrt(dx*dx + dy*dy);
+				leftX /= lens;
+				leftY /= lens;
+				rightX /= lens;
+				rightY /= lens;
+				var uScale:Number = Math.acos(leftX*rightX + leftY*rightY)/Math.PI/2;
+				var uRight:Number = angle/Math.PI/2;
+
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogConsts"), 0.5*uScale, 0.5 - uRight, 0);
+				drawUnit.setTextureAt(program.fragmentShader.getVariableIndex("sFogTexture"), fogTexture._texture);
+			}
 		}
 
 		private static var lightGroup:Vector.<Light3D> = new Vector.<Light3D>();

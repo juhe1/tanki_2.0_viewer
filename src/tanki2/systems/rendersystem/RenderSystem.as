@@ -1,7 +1,6 @@
 package tanki2.systems.rendersystem
 {
    import alternativa.engine3d.core.Object3D;
-   import alternativa.engine3d.materials.TextureMaterial;
    import flash.display.Stage3D;
    import tanki2.Scene3D;
    import tanki2.vehicles.tank.TanksManager;
@@ -21,6 +20,9 @@ package tanki2.systems.rendersystem
    import flash.events.Event;
    import flash.ui.Keyboard;
    import flash.utils.Dictionary;
+   import alternativa.engine3d.alternativa3d;
+   
+   use namespace alternativa3d;
    
    public class RenderSystem extends GameTask
    {

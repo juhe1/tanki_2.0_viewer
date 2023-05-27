@@ -91,6 +91,9 @@ package tanki2.vehicles.tank
          
          this.leftTrack = Skin(object.getChildByName("LTrack"));
          this.rightTrack = Skin(object.getChildByName("RTrack"));
+         
+         this.leftTrack.geometry.calculateTangents(0);
+         this.rightTrack.geometry.calculateTangents(0);
       }
       
       private function addMountPoint(object:Object3D):void 

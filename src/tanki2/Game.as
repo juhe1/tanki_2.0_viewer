@@ -80,6 +80,9 @@ package tanki2
          
          // Load map
          this.loadMap("resources/maps/arena-a3d.tara");
+         
+         // textureString can be found from original tanki 2.0 demo's config file.
+         FogUtils.setFog("45:0xffac5a 135:0x786d5d 225:0x00355f 315:0x786d5d", 100, 40000, 0.5);
       }
       
       public static function getInstance() : Game

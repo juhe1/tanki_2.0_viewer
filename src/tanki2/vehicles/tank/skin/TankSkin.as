@@ -3,6 +3,7 @@ package tanki2.vehicles.tank.skin
    import alternativa.engine3d.alternativa3d;
    import alternativa.engine3d.core.Camera3D;
    import alternativa.engine3d.core.Object3D;
+   import alternativa.engine3d.materials.NormalMapSpace;
    import alternativa.engine3d.materials.StandardMaterial;
    import alternativa.engine3d.materials.TextureMaterial;
    import alternativa.engine3d.objects.Mesh;
@@ -253,13 +254,13 @@ package tanki2.vehicles.tank.skin
          if (part is TankHull)
          {
             var tankHull:TankHull = TankHull(part);
-            var wheelMaterial:TextureMaterial = new TextureMaterial(part.diffuseMap);
+            var wheelMaterial:TankMaterial = new TankMaterial(part.diffuseMap, this._colormap, part.surfaceMap, part.normalMap);
             
             var rightTrackMaterial:TrackMaterial = new TrackMaterial(tankHull.trackDiffuseMap, tankHull.trackNormalMap);
             this.rightTrackSkin.setTrackMaterial(rightTrackMaterial);
             this.rightTrackSkin.setWheelsMaterial(wheelMaterial);
             
-            var leftTrackMaterial:TrackMaterial = new TrackMaterial(tankHull.trackDiffuseMap, tankHull.trackNormalMap);
+            var leftTrackMaterial:TrackMaterial = TrackMaterial(rightTrackMaterial.clone());
             this.leftTrackSkin.setTrackMaterial(leftTrackMaterial);
             this.leftTrackSkin.setWheelsMaterial(wheelMaterial);
             

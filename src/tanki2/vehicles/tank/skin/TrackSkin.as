@@ -1,6 +1,7 @@
 package tanki2.vehicles.tank.skin 
 {
    import alternativa.engine3d.core.Object3D;
+   import alternativa.engine3d.materials.Material;
    import alternativa.engine3d.materials.TextureMaterial;
    import alternativa.engine3d.objects.Joint;
    import alternativa.engine3d.objects.Mesh;

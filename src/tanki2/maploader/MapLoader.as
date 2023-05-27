@@ -243,7 +243,7 @@ package tanki2.maploader
          var diffuseTextureResource:TextureResource = null;
          var emissionTextureResource:TextureResource = null;
          var opacityTextureResource:TextureResource = null;
-         var material:LightMapMaterial = null;
+         var material:MapMaterial = null;
          
          for each(surface in mesh._surfaces)
          {
@@ -257,11 +257,11 @@ package tanki2.maploader
                
                if(emissionTextureResource == null)
                {
-                  material = new LightMapMaterial(diffuseTextureResource, fakeEmissionTextureResource, 0, opacityTextureResource);
+                  material = new MapMaterial(diffuseTextureResource, fakeEmissionTextureResource, 0, opacityTextureResource);
                }
                else
                {
-                  material = new LightMapMaterial(diffuseTextureResource, emissionTextureResource, 1, opacityTextureResource);
+                  material = new MapMaterial(diffuseTextureResource, emissionTextureResource, 1, opacityTextureResource);
                }
                surface.material = material;
             }

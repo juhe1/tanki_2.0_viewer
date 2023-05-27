@@ -28,8 +28,10 @@ package tanki2.vehicles.tank.skin {
 	import alternativa.engine3d.materials.compiler.Procedure;
 	import alternativa.engine3d.materials.compiler.VariableType;
 	import alternativa.engine3d.objects.Surface;
+   import alternativa.engine3d.resources.BitmapTextureResource;
 	import alternativa.engine3d.resources.Geometry;
 	import alternativa.engine3d.resources.TextureResource;
+   import flash.display.BitmapData;
 
 	import avmplus.getQualifiedClassName;
 
@@ -108,15 +110,15 @@ package tanki2.vehicles.tank.skin {
 		/**
 		 * @private
 		 */
-		alternativa3d static var fogColorR:Number = 0xC8/255;
+		alternativa3d static var fogColorR:Number = 0xffac5a;
 		/**
 		 * @private
 		 */
-		alternativa3d static var fogColorG:Number = 0xA2/255;
+		alternativa3d static var fogColorG:Number = 0x786d5d;
 		/**
 		 * @private
 		 */
-		alternativa3d static var fogColorB:Number = 0xC8/255;
+		alternativa3d static var fogColorB:Number = 0x00355f;
 
 		/**
 		 * @private
@@ -332,6 +334,12 @@ package tanki2.vehicles.tank.skin {
          "sub o0, t2, t0",
          "mul o0, o0, c1.xxx"
 		], "getDiffuseProcedure");
+      
+      private static const _newPassUVProcedure:Procedure = new Procedure([
+         "#a0=aUV", "#v0=vUV",
+         "#c0=cUVOffsets",
+         "add v0, a0, c0"
+      ], "passUVProcedure");
 
 		/**
 		 * @private
@@ -380,6 +388,9 @@ package tanki2.vehicles.tank.skin {
       
       public var tilingX:Number = 3;
       public var tilingY:Number = 3;
+      
+      public var uOffset:Number = 0;
+      public var vOffset:Number = 0;
       
       public var diffuseStrength:Number = 0.6;
       
@@ -431,13 +442,18 @@ package tanki2.vehicles.tank.skin {
 					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(lightMap)) as Class, resourceType)) {
 				resources[lightMap] = true;
 			}
+         
+         if (fogTexture != null &&
+					A3DUtils.checkParent(getDefinitionByName(getQualifiedClassName(fogTexture)) as Class, resourceType)) {
+				resources[fogTexture] = true;
+			}
 		}
 
 		/**
 		 * @private
 		 */
 		alternativa3d function getPassUVProcedure():Procedure {
-			return _passUVProcedure;
+			return _newPassUVProcedure;
 		}
 
 		/**
@@ -768,24 +784,24 @@ package tanki2.vehicles.tank.skin {
 				fragmentLinker.addProcedure(_mulLightingProcedure, "tColor", "tTotalLight", "tTotalHighLight");
 
 
-//				if (fogMode == SIMPLE || fogMode == ADVANCED) {
-//					fragmentLinker.setOutputParams(_mulLightingProcedure, "tColor");
-//				}
-//				if (fogMode == SIMPLE) {
-//					vertexLinker.addProcedure(passSimpleFogConstProcedure);
-//					vertexLinker.setInputParams(passSimpleFogConstProcedure, positionVar);
-//					fragmentLinker.addProcedure(outputWithSimpleFogProcedure);
-//					fragmentLinker.setInputParams(outputWithSimpleFogProcedure, "tColor");
-//					outputProcedure = outputWithSimpleFogProcedure;
-//				} else if (fogMode == ADVANCED) {
-//					vertexLinker.declareVariable("tProjected");
-//					vertexLinker.setOutputParams(_projectProcedure, "tProjected");
-//					vertexLinker.addProcedure(postPassAdvancedFogConstProcedure);
-//					vertexLinker.setInputParams(postPassAdvancedFogConstProcedure, positionVar, "tProjected");
-//					fragmentLinker.addProcedure(outputWithAdvancedFogProcedure);
-//					fragmentLinker.setInputParams(outputWithAdvancedFogProcedure, "tColor");
-//					outputProcedure = outputWithAdvancedFogProcedure;
-//				}
+				if (fogMode == SIMPLE || fogMode == ADVANCED) {
+					fragmentLinker.setOutputParams(_mulLightingProcedure, "tColor");
+				}
+				if (fogMode == SIMPLE) {
+					vertexLinker.addProcedure(passSimpleFogConstProcedure);
+					vertexLinker.setInputParams(passSimpleFogConstProcedure, positionVar);
+					fragmentLinker.addProcedure(outputWithSimpleFogProcedure);
+					fragmentLinker.setInputParams(outputWithSimpleFogProcedure, "tColor");
+					outputProcedure = outputWithSimpleFogProcedure;
+				} else if (fogMode == ADVANCED) {
+					vertexLinker.declareVariable("tProjected");
+					vertexLinker.setOutputParams(_projectProcedure, "tProjected");
+					vertexLinker.addProcedure(postPassAdvancedFogConstProcedure);
+					vertexLinker.setInputParams(postPassAdvancedFogConstProcedure, positionVar, "tProjected");
+					fragmentLinker.addProcedure(outputWithAdvancedFogProcedure);
+					fragmentLinker.setInputParams(outputWithAdvancedFogProcedure, "tColor");
+					outputProcedure = outputWithAdvancedFogProcedure;
+				}
 
 				fragmentLinker.varyings = vertexLinker.varyings;
 				program = new TankMaterialProgram(vertexLinker, fragmentLinker, (shadowedLight != null) ? 1 : lightsLength);
@@ -822,6 +838,7 @@ package tanki2.vehicles.tank.skin {
 			drawUnit.setFragmentConstantsFromNumbers(program.cSurface, 0, glossiness, specularPower, 1);
 			//drawUnit.setFragmentConstantsFromNumbers(program.cThresholdAlpha, alphaThreshold, 0, 0, alpha);
          drawUnit.setFragmentConstantsFromNumbers(program.cTiling, this.tilingX, this.tilingY, 0, 0);
+         drawUnit.setVertexConstantsFromNumbers(program.cUVOffsets,-this.uOffset,this.vOffset,0,0);
          drawUnit.setFragmentConstantsFromNumbers(program.cDiffuseStrength, this.diffuseStrength, 0, 0, 0);
 
 			var light:Light3D;
@@ -968,46 +985,46 @@ package tanki2.vehicles.tank.skin {
 				camera.renderer.addDrawUnit(drawUnit, objectRenderPriority >= 0 ? objectRenderPriority : Renderer.TRANSPARENT_SORT);
 			}
 
-//			if (fogMode == SIMPLE || fogMode == ADVANCED) {
-//				var lm:Transform3D = object.localToCameraTransform;
-//				var dist:Number = fogFar - fogNear;
-//				drawUnit.setVertexConstantsFromNumbers(program.vertexShader.getVariableIndex("cFogSpace"), lm.i/dist, lm.j/dist, lm.k/dist, (lm.l - fogNear)/dist);
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogRange"), fogMaxDensity, 1, 0, 1 - fogMaxDensity);
-//			}
-//			if (fogMode == SIMPLE) {
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogColor"), fogColorR, fogColorG, fogColorB);
-//			}
-//			if (fogMode == ADVANCED) {
-//				if (fogTexture == null) {
-//					var bmd:BitmapData = new BitmapData(32, 1, false, 0xFF0000);
-//					for (i = 0; i < 32; i++) {
-//						bmd.setPixel(i, 0, ((i/32)*255) << 16);
-//					}
-//					fogTexture = new BitmapTextureResource(bmd);
-//					fogTexture.upload(camera.context3D);
-//				}
-//				var cLocal:Transform3D = camera.localToGlobalTransform;
-//				var halfW:Number = camera.view.width/2;
-//				var leftX:Number = -halfW*cLocal.a + camera.focalLength*cLocal.c;
-//				var leftY:Number = -halfW*cLocal.e + camera.focalLength*cLocal.g;
-//				var rightX:Number = halfW*cLocal.a + camera.focalLength*cLocal.c;
-//				var rightY:Number = halfW*cLocal.e + camera.focalLength*cLocal.g;
-//				// Finding UV
-//				var angle:Number = (Math.atan2(leftY, leftX) - Math.PI/2);
-//				if (angle < 0) angle += Math.PI*2;
-//				var dx:Number = rightX - leftX;
-//				var dy:Number = rightY - leftY;
-//				var lens:Number = Math.sqrt(dx*dx + dy*dy);
-//				leftX /= lens;
-//				leftY /= lens;
-//				rightX /= lens;
-//				rightY /= lens;
-//				var uScale:Number = Math.acos(leftX*rightX + leftY*rightY)/Math.PI/2;
-//				var uRight:Number = angle/Math.PI/2;
-//
-//				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogConsts"), 0.5*uScale, 0.5 - uRight, 0);
-//				drawUnit.setTextureAt(program.fragmentShader.getVariableIndex("sFogTexture"), fogTexture._texture);
-//			}
+			if (fogMode == SIMPLE || fogMode == ADVANCED) {
+				var lm:Transform3D = object.localToCameraTransform;
+				var dist:Number = fogFar - fogNear;
+				drawUnit.setVertexConstantsFromNumbers(program.vertexShader.getVariableIndex("cFogSpace"), lm.i/dist, lm.j/dist, lm.k/dist, (lm.l - fogNear)/dist);
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogRange"), fogMaxDensity, 1, 0, 1 - fogMaxDensity);
+			}
+			if (fogMode == SIMPLE) {
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogColor"), fogColorR, fogColorG, fogColorB);
+			}
+			if (fogMode == ADVANCED) {
+				if (fogTexture == null) {
+					var bmd:BitmapData = new BitmapData(32, 1, false, 0xFF0000);
+					for (i = 0; i < 32; i++) {
+						bmd.setPixel(i, 0, ((i/32)*255) << 16);
+					}
+					fogTexture = new BitmapTextureResource(bmd);
+					fogTexture.upload(camera.context3D);
+				}
+				var cLocal:Transform3D = camera.localToGlobalTransform;
+				var halfW:Number = camera.view.width/2;
+				var leftX:Number = -halfW*cLocal.a + camera.focalLength*cLocal.c;
+				var leftY:Number = -halfW*cLocal.e + camera.focalLength*cLocal.g;
+				var rightX:Number = halfW*cLocal.a + camera.focalLength*cLocal.c;
+				var rightY:Number = halfW*cLocal.e + camera.focalLength*cLocal.g;
+				// Finding UV
+				var angle:Number = (Math.atan2(leftY, leftX) - Math.PI/2);
+				if (angle < 0) angle += Math.PI*2;
+				var dx:Number = rightX - leftX;
+				var dy:Number = rightY - leftY;
+				var lens:Number = Math.sqrt(dx*dx + dy*dy);
+				leftX /= lens;
+				leftY /= lens;
+				rightX /= lens;
+				rightY /= lens;
+				var uScale:Number = Math.acos(leftX*rightX + leftY*rightY)/Math.PI/2;
+				var uRight:Number = angle/Math.PI/2;
+
+				drawUnit.setFragmentConstantsFromNumbers(program.fragmentShader.getVariableIndex("cFogConsts"), 0.5*uScale, 0.5 - uRight, 0);
+				drawUnit.setTextureAt(program.fragmentShader.getVariableIndex("sFogTexture"), fogTexture._texture);
+			}
 		}
 
 		private static var lightGroup:Vector.<Light3D> = new Vector.<Light3D>();
@@ -1280,6 +1297,7 @@ class TankMaterialProgram extends ShaderProgram {
 	public var cSurface:int = -1;
 	public var cThresholdAlpha:int = -1;
 	public var cTiling:int = -1;
+	public var cUVOffsets:int = -1;
    public var cDiffuseStrength:int = -1;
 	public var sDiffuse:int = -1;
 	public var sOpacity:int = -1;
@@ -1317,6 +1335,7 @@ class TankMaterialProgram extends ShaderProgram {
 		cSurface = fragmentShader.findVariable("cSurface");
 		//cThresholdAlpha = fragmentShader.findVariable("cThresholdAlpha");
 		cTiling = fragmentShader.findVariable("cTiling");
+      cUVOffsets = vertexShader.findVariable("cUVOffsets");
 		cDiffuseStrength = fragmentShader.findVariable("cDiffuseStrength");
 		sDiffuse = fragmentShader.findVariable("sDiffuse");
 		sOpacity = fragmentShader.findVariable("sOpacity");
