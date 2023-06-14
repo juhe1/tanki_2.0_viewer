@@ -88,6 +88,13 @@ package tanki2.vehicles.tank
           this.allLoadedCheck();
       }
       
+      private function getTurretLoadedEventFunction(turretName:String):Function
+      {
+         return function (e:Event):void {
+            onTurretTankPartLoaded(e, turretName);
+         };
+      }
+      
       private function loadTurretsFromJson(json:Object):void 
       {
          var turrets:Object = json.turrets;
@@ -97,15 +104,12 @@ package tanki2.vehicles.tank
          {
             var turretTextureNames:Vector.<String> = this.stringArrayToVector(turretObject.textureNames);
             var turretLoader:PartLoader = new PartLoader(turretObject.path, turretTextureNames, "turret.a3d");
-            turretLoader.addEventListener(Event.COMPLETE, function (e:Event):void 
-            {
-               onTurretsTankPartLoaded(e, turretObject.name)
-            });
+            turretLoader.addEventListener(Event.COMPLETE, this.getTurretLoadedEventFunction(turretObject.name));
             turretLoader.load();
          }
       }
       
-      private function onTurretsTankPartLoaded(e:Event, turretName):void 
+      private function onTurretTankPartLoaded(e:Event, turretName):void 
       {
          var partLoader:PartLoader = PartLoader(e.target);
          var part:Part = partLoader.part;
@@ -115,6 +119,13 @@ package tanki2.vehicles.tank
          
          this.loadedTurretsCount++;
          this.allLoadedCheck();
+      }
+      
+      private function getHullLoadedEventFunction(hullName:String):Function
+      {
+         return function (e:Event):void {
+            onHullTankPartLoaded(e, hullName);
+         };
       }
       
       private function loadHullsFromJson(json:Object):void 
@@ -127,15 +138,14 @@ package tanki2.vehicles.tank
             var hullTextureNames:Vector.<String> = this.stringArrayToVector(hullObject.textureNames);
             
             var hullLoader:PartLoader = new PartLoader(hullObject.path, hullTextureNames, "main.dae");
-            hullLoader.addEventListener(Event.COMPLETE, function (e:Event):void {
-               onHullTankPartLoaded(e, hullObject.name);
-            });
+            hullLoader.addEventListener(Event.COMPLETE, this.getHullLoadedEventFunction(hullObject.name));
             hullLoader.load();
          }
       }
       
       private function onHullTankPartLoaded(e:Event, hullName:String):void 
       {
+         trace(hullName, " loaded!");
          var partLoader:PartLoader = PartLoader(e.target);
          var part:Part = partLoader.part;
          

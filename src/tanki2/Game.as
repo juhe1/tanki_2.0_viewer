@@ -165,6 +165,11 @@ package tanki2
             "name":"viking m1",\
             "path":"resources/hulls/viking/m1",\
             "textureNames":["diffuse", "normalmap", "shadow", "surface", "tracks_diffuse", "tracks_normalmap"]\
+         },\
+         {\
+            "name":"wasp m2",\
+            "path":"resources/hulls/wasp/m2",\
+            "textureNames":["diffuse", "normalmap", "shadow", "surface", "tracks_diffuse", "tracks_normalmap"]\
          }],\
          "turrets":[{\
             "name":"thunder m3",\
